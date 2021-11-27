@@ -1,10 +1,16 @@
 import { Component } from '@angular/core';
+import { UserService } from './user/user.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'retail-app';
+
+  constructor(
+    public readonly userService: UserService
+  ) {}
+
+  ngOnInit() {}
 }
