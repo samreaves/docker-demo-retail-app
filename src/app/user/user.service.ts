@@ -26,14 +26,29 @@ export class UserService {
   /* Sign In */
   signIn(credentials: UserCredentials) {
     /* Call sign in endpoint with user / pass payload */
-    this.user$.next(mockUser);
-    this._router.navigate([`/home`]);
+    this._http.post<{ success: Boolean, token: string}>(`${environment.apiURL}/auth/login`, { username: credentials.username, password: credentials.password })
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.token) {
+            localStorage.setItem('username', credentials.username);
+            localStorage.setItem('token', response.token);
+            this.getUserInfo().then(() => {
+              this._router.navigate([`/home`]);
+            })
+          }
+        }, 
+        error: (error) => {
+          console.error(error);
+        }
+      });
   }
 
   /* Sign Out */
   signOut(): void {
     /* Clear session storage */
     /* Route to sign in */
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
     this.user$.next(null);
     this._router.navigateByUrl(`/signin`);
   }
@@ -48,8 +63,16 @@ export class UserService {
     /* Call sign up endpoint with user payload */
     /* Set user token and name in session storage */
     /* Return user */
-    this.user$.next(mockUser);
-    this._router.navigate([`/home`]);
+    this.redirectToSignUp();
+  }
+
+  /* Get User Info */
+  async getUserInfo() {
+    const url = `${environment.apiURL}/api/users/${localStorage.getItem('username')}`;
+    const headers =  new HttpHeaders({ 'x-access-token': localStorage.getItem('token') as string });
+
+    const user = await this._http.get<User>(url, { headers }).toPromise();
+    this.user$.next(user as User);
   }
 
   /* Get User */

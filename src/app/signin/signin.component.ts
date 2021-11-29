@@ -35,7 +35,8 @@ export class SigninComponent {
       return;
     }
 
-    this.userService.signIn(this.signInForm.value)
+    this.userService.signIn(this.signInForm.value);
+    this.signInForm.reset();
   }
 
   listenForEnter($event: KeyboardEvent) {

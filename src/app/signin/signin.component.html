@@ -23,7 +23,6 @@
          role="button"
          class="btn signin"
          [ngClass]="{'disabled': !signInForm.touched || !signInForm.valid }"
-         (ngSubmit)="submit()"
          (click)="submit()"
          (keyup)="listenForEnter($event)">
         Sign In

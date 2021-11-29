@@ -4,8 +4,9 @@
 
 export const environment = {
   production: false,
-  hostURL: 'http://localhost:4200',
-  onboardingURL: '/onboarding',
+  hostURL: 'http://localhost/retail',
+  onboardingURL: 'http://localhost/onboarding',
+  apiURL: 'http://localhost://remote'
 };
 
 /*
