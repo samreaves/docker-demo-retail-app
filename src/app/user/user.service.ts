@@ -19,8 +19,22 @@ export class UserService {
   ) {}
 
   /* Make sure token is still valid */
-  checkToken(): Observable<boolean> {
-    return of(true);
+  checkToken() {
+      const checkTokenPoll = setInterval(() => {
+        if (this.user$.getValue()) {
+          const url = `${environment.apiURL}/auth/verify`;
+          const headers =  new HttpHeaders({ 'x-access-token': localStorage.getItem('token') as string });
+          this._http.get(url, { headers })
+            .subscribe({
+              next: () => {},
+              error: () => {
+                this.clearUser();
+                this._router.navigate([`/signin`]);
+                clearInterval(checkTokenPoll);
+              }
+            });
+        }
+    }, 30000);
   }
 
   /* Sign In */
@@ -34,7 +48,8 @@ export class UserService {
             localStorage.setItem('token', response.token);
             this.getUserInfo().then(() => {
               this._router.navigate([`/home`]);
-            })
+              this.checkToken();
+            });
           }
         }, 
         error: (error) => {
@@ -47,10 +62,8 @@ export class UserService {
   signOut(): void {
     /* Clear session storage */
     /* Route to sign in */
-    localStorage.removeItem('username');
-    localStorage.removeItem('token');
-    this.user$.next(null);
-    this._router.navigateByUrl(`/signin`);
+    this.clearUser();
+    this._router.navigate([`/signin`]);
   }
 
   /* Redirect to onboarding app */
@@ -78,5 +91,11 @@ export class UserService {
   /* Get User */
   getUser(): BehaviorSubject<User | null> {
     return this.user$
+  }
+
+  clearUser() {
+    this.user$.next(null);
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
   }
 }
