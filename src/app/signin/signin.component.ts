@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService } from '../user/user.service';
 
@@ -10,7 +10,7 @@ import { UserService } from '../user/user.service';
 export class SigninComponent {
 
   signInForm = new FormGroup({
-    username: new FormControl('', [
+    username: new FormControl(localStorage.getItem('username') ? localStorage.getItem('username') : '', [
       Validators.required,
       Validators.minLength(1),
       Validators.maxLength(40),
