@@ -18,23 +18,42 @@ export class UserService {
     private readonly _router: Router
   ) {}
 
+  /* Poll every 30 seconds to make sure token is still valid */
+  pollForToken() {
+    const checkTokenPoll = setInterval(() => {
+      if (this.user$.getValue()) {
+        this.checkToken()
+          .subscribe({
+            next: () => {},
+            error: () => {
+              this.clearUser();
+              this._router.navigate([`/signin`]);
+              clearInterval(checkTokenPoll);
+            }
+          });
+      }
+    }, 30000);
+  }
+
+  /* Redirect to home if valid token found */
+  redirectToHomeIfTokenIsValid() {
+    if (localStorage.getItem('token')) {
+      this.checkToken()
+        .subscribe({
+          next: () => {
+            this.getUserInfo().then(() => {
+              this._router.navigate([`/home`]);
+              this.pollForToken();
+            });
+        }})
+    }
+  }
+
   /* Make sure token is still valid */
   checkToken() {
-      const checkTokenPoll = setInterval(() => {
-        if (this.user$.getValue()) {
-          const url = `${environment.apiURL}/auth/verify`;
-          const headers =  new HttpHeaders({ 'x-access-token': localStorage.getItem('token') as string });
-          this._http.get(url, { headers })
-            .subscribe({
-              next: () => {},
-              error: () => {
-                this.clearUser();
-                this._router.navigate([`/signin`]);
-                clearInterval(checkTokenPoll);
-              }
-            });
-        }
-    }, 30000);
+    const url = `${environment.apiURL}/auth/verify`;
+    const headers =  new HttpHeaders({ 'x-access-token': localStorage.getItem('token') as string });
+    return this._http.get(url, { headers });
   }
 
   /* Sign In */
@@ -48,7 +67,7 @@ export class UserService {
             localStorage.setItem('token', response.token);
             this.getUserInfo().then(() => {
               this._router.navigate([`/home`]);
-              this.checkToken();
+              this.pollForToken();
             });
           }
         }, 

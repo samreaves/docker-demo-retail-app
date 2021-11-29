@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService } from '../user/user.service';
 
@@ -7,7 +7,7 @@ import { UserService } from '../user/user.service';
   templateUrl: './signin.component.html',
   styleUrls: ['./signin.component.scss']
 })
-export class SigninComponent {
+export class SigninComponent implements OnInit {
 
   signInForm = new FormGroup({
     username: new FormControl(localStorage.getItem('username') ? localStorage.getItem('username') : '', [
@@ -25,6 +25,10 @@ export class SigninComponent {
   constructor(
     public readonly userService: UserService,
   ) { }
+
+  ngOnInit() {
+    this.userService.redirectToHomeIfTokenIsValid();
+  }
 
   submit() {
     if (
