@@ -71,14 +71,6 @@ export class UserService {
     window.location.href = environment.onboardingURL;
   }
 
-  /* Sign Up */
-  signUp() {
-    /* Call sign up endpoint with user payload */
-    /* Set user token and name in session storage */
-    /* Return user */
-    this.redirectToSignUp();
-  }
-
   /* Get User Info */
   async getUserInfo() {
     const url = `${environment.apiURL}/api/users/${localStorage.getItem('username')}`;

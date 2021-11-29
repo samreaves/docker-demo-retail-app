@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   hostURL: 'http://localhost/retail',
   onboardingURL: 'http://localhost/onboarding',
-  apiURL: 'http://localhost://remote'
+  apiURL: 'http://localhost:/remote'
 };
 
 /*
